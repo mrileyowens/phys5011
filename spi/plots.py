@@ -4,33 +4,60 @@ import pandas as pd
 
 import matplotlib.pyplot as plt
 
-home='C:/Users/15136/OneDrive - University of Cincinnati/Documents/Courses/PHYS 5011/spi'
+from scipy.optimize import curve_fit
+
+def f(x,I,a,d,w):
+
+    alpha=np.pi*a*np.sin(x)/w
+    beta=np.pi*d*np.sin(x)/w
+
+    return I*(np.cos(beta))**2*(np.sin(alpha)/alpha)**2
+
+home='C:/Users/15136/OneDrive - University of Cincinnati/Documents/Courses/phys5011/spi'
 
 data=home+'/data'
 figs=home+'/figs'
 
 dfLaser=pd.read_csv(data+'/laser.csv',delimiter=',')
 
-v=dfLaser.iloc[:,0].to_numpy()
-m2=dfLaser.iloc[:,1].to_numpy()
-m3=dfLaser.iloc[:,2].to_numpy()
-m4=dfLaser.iloc[:,3].to_numpy()
+x=dfLaser.iloc[:,0].to_numpy()
+m2=dfLaser.iloc[:,1].to_numpy()-7.6
+m3=dfLaser.iloc[:,2].to_numpy()-7.6
+m4=dfLaser.iloc[:,3].to_numpy()-7.6
 
-fig,ax=plt.subplots(1,1)
+theta=(x-4.0382)/506.5
 
-ax.plot(v,m2,label='Mode 2')
-ax.plot(v,m3,label='Mode 3')
-ax.plot(v,m4,label='Mode 4')
+popt,pcov=curve_fit(f,theta,m3,p0=[175,100e-6,253e-6,0.546e-6])
 
-ax.set_xlim(0.0,8.0)
-ax.set_ylim(0.0)
+print(popt,pcov)
 
-ax.set_xlabel('Position (mm)')
-ax.set_ylabel('Voltage (mV)')
+r=(m3-f(theta,*popt))/m3
 
-ax.legend(loc='upper right')
+fig,ax=plt.subplots(2,1,gridspec_kw={'height_ratios':[3,1]},sharex=True)
 
-fig.savefig(figs+'/lModes.png',dpi=100,bbox_inches='tight')
+ax[0].plot(theta,f(theta,*popt),label='Fit',c='red',ls='dashed')
+ax[0].plot(theta,m2,label='Mode 2')
+ax[0].plot(theta,m3,label='Mode 3')
+ax[0].plot(theta,m4,label='Mode 4')
+
+#ax[0].set_xlim(-0.005,0.005)
+ax[0].set_ylim(0.0)
+
+ax[0].set_ylabel('Voltage (mV)')
+
+ax[0].legend(loc='upper right')
+
+ax[1].scatter(theta,r,marker='.',c='black')
+ax[1].axhline(0.0,ls='dashed',c='black')
+
+ax[1].set_yscale('log')
+
+#ax[1].set_ylim(-2.0,2.0)
+
+ax[1].set_xlabel('Angular Position (rad.)')
+ax[1].set_ylabel('Residual')
+
+fig.savefig(figs+'/lModes.pdf',bbox_inches='tight')
 
 dfPMT=pd.read_csv(data+'/pmt.csv',delimiter=',')
 
