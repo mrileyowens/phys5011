@@ -160,3 +160,16 @@ ax[0,1].legend(loc='upper right')
 ax[1,1].axis('off')
 
 fig.savefig(figs+'/spi.pdf',bbox_inches='tight')
+
+dfCnt=pd.read_csv(data+'/count.csv',delimiter=',')
+
+cnt=dfCnt.iloc[:,0].to_numpy()*(1./.04)
+
+fig,ax=plt.subplots(1,1)
+
+ax.hist(cnt,bins=25)
+
+ax.set_xlabel('Count Rate (Hz)')
+ax.set_ylabel('Frequency')
+
+fig.savefig(figs+'/count.pdf',bbox_inches='tight')
