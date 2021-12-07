@@ -148,8 +148,8 @@ ax[1,0].set_ylim(-0.5,3.0)
 ax[1,0].set_xlabel('Angular Position (rad.)')
 ax[1,0].set_ylabel('Residual')
 
-ax[0,1].plot(theta,m2,c='blue',label='Mode 2')
-ax[0,1].plot(theta,m4,c='green',label='Mode 4')
+ax[0,1].plot(theta,m2-bckgnd,c='blue',label='Mode 2')
+ax[0,1].plot(theta,m4-bckgnd,c='green',label='Mode 4')
 
 ax[0,1].set_xlim(-0.007,0.007)
 
